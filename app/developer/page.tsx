@@ -6,10 +6,10 @@ import { useCadStore } from "@/store/useCadStore";
 import Header from "@/components/editor/Header";
 import SidebarLeft from "@/components/editor/SidebarLeft";
 import SidebarRight from "@/components/editor/SidebarRight";
-import MobileView from "@/components/editor/MobileView";
 
-// Only dynamically import Editor (uses Paper.js which needs canvas)
+// Dynamically import components that use client-side features
 const Editor = dynamic(() => import("@/components/editor/Editor"), { ssr: false });
+const MobileView = dynamic(() => import("@/components/editor/MobileView"), { ssr: false });
 
 export default function DeveloperPage() {
     const mode = useCadStore((state: any) => state.mode);
