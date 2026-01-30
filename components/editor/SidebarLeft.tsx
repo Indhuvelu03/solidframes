@@ -19,7 +19,7 @@ export default function SidebarLeft() {
     const setSelection = useCadStore((state: any) => state.setSelection);
     const mode = useCadStore((state: any) => state.mode);
 
-    const layerList: CadLayer[] = ['Walls', 'Furniture', 'Electrical'];
+    const layerList: CadLayer[] = ['Walls'];
 
     const handleTreeItemClick = (id: string) => {
         setSelection([id]);
