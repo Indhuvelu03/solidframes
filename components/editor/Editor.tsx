@@ -681,12 +681,19 @@ export default function Editor() {
                 updateSelectionUI(dragState.current.item);
                 // Dispatch selection update event for properties panel
                 const item = dragState.current.item;
+                let content = "";
+                if (item.className === 'PointText') {
+                    content = (item as paper.PointText).content;
+                } else if (item.className === 'Group') {
+                    const text = item.children.find((c: any) => c.className === 'PointText') as paper.PointText;
+                    if (text) content = text.content;
+                }
                 window.dispatchEvent(new CustomEvent('cad-selection-update', {
                     detail: {
-                        width: item.bounds.width,
-                        height: item.bounds.height,
+                        width: item.bounds.width / SCALE_MM_TO_PX,
+                        height: item.bounds.height / SCALE_MM_TO_PX,
                         rotation: item.rotation,
-                        content: item.className === 'PointText' ? (item as paper.PointText).content : ''
+                        content: content
                     }
                 }));
             }
