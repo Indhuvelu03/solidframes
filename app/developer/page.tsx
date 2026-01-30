@@ -38,7 +38,7 @@ export default function DeveloperPage() {
     }
 
     return (
-        <main className={`flex flex-col h-screen w-screen overflow-hidden ${mode} ${mode === 'dark' ? 'bg-[#050505]' : 'bg-[#fcfcfc]'}`}>
+        <main className={`flex flex-col h-screen w-screen overflow-hidden ${mode} ${mode === 'dark' ? 'bg-background' : 'bg-background'}`}>
             <Header />
             <div className="flex flex-1 overflow-hidden relative">
                 <SidebarLeft />

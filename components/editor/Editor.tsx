@@ -514,15 +514,77 @@ export default function Editor() {
             else if (dragState.current.mode === 'resizing' && dragState.current.item) {
                 const item = dragState.current.item;
                 const corner = dragState.current.handleType;
+                const startBounds = dragState.current.startBounds;
 
-                if (corner === 'bottomRight') item.bounds.bottomRight = point;
-                else if (corner === 'topLeft') item.bounds.topLeft = point;
-                else if (corner === 'topRight') item.bounds.topRight = point;
-                else if (corner === 'bottomLeft') item.bounds.bottomLeft = point;
-                else if (corner === 'topCenter') item.bounds.top = point.y;
-                else if (corner === 'bottomCenter') item.bounds.bottom = point.y;
-                else if (corner === 'leftCenter') item.bounds.left = point.x;
-                else if (corner === 'rightCenter') item.bounds.right = point.x;
+                if (!startBounds) return;
+
+                // Calculate the new bounds based on the dragged corner/edge
+                let newBounds = startBounds.clone();
+
+                if (corner === 'bottomRight') {
+                    newBounds.width = Math.max(10, point.x - newBounds.left);
+                    newBounds.height = Math.max(10, point.y - newBounds.top);
+                }
+                else if (corner === 'topLeft') {
+                    const oldRight = newBounds.right;
+                    const oldBottom = newBounds.bottom;
+                    newBounds.left = Math.min(point.x, oldRight - 10);
+                    newBounds.top = Math.min(point.y, oldBottom - 10);
+                    newBounds.right = oldRight;
+                    newBounds.bottom = oldBottom;
+                }
+                else if (corner === 'topRight') {
+                    const oldLeft = newBounds.left;
+                    const oldBottom = newBounds.bottom;
+                    newBounds.right = Math.max(point.x, oldLeft + 10);
+                    newBounds.top = Math.min(point.y, oldBottom - 10);
+                    newBounds.left = oldLeft;
+                    newBounds.bottom = oldBottom;
+                }
+                else if (corner === 'bottomLeft') {
+                    const oldRight = newBounds.right;
+                    const oldTop = newBounds.top;
+                    newBounds.left = Math.min(point.x, oldRight - 10);
+                    newBounds.bottom = Math.max(point.y, oldTop + 10);
+                    newBounds.right = oldRight;
+                    newBounds.top = oldTop;
+                }
+                else if (corner === 'topCenter') {
+                    const oldBottom = newBounds.bottom;
+                    newBounds.top = Math.min(point.y, oldBottom - 10);
+                    newBounds.bottom = oldBottom;
+                }
+                else if (corner === 'bottomCenter') {
+                    const oldTop = newBounds.top;
+                    newBounds.bottom = Math.max(point.y, oldTop + 10);
+                    newBounds.top = oldTop;
+                }
+                else if (corner === 'leftCenter') {
+                    const oldRight = newBounds.right;
+                    newBounds.left = Math.min(point.x, oldRight - 10);
+                    newBounds.right = oldRight;
+                }
+                else if (corner === 'rightCenter') {
+                    const oldLeft = newBounds.left;
+                    newBounds.right = Math.max(point.x, oldLeft + 10);
+                    newBounds.left = oldLeft;
+                }
+
+                // Apply the new bounds using scaling to maintain shape integrity
+                const scaleX = newBounds.width / startBounds.width;
+                const scaleY = newBounds.height / startBounds.height;
+                
+                // Store center before scaling
+                const oldCenter = item.bounds.center;
+                
+                // Reset to original bounds first
+                item.bounds = startBounds;
+                
+                // Apply scale from center
+                item.scale(scaleX, scaleY, startBounds.center);
+                
+                // Reposition to match the new bounds
+                item.position = item.position.add(newBounds.center.subtract(item.bounds.center));
 
                 updateSelectionUI(item);
             }
@@ -614,12 +676,28 @@ export default function Editor() {
                 // DO NOT REMOVE dimensionText.current
             }
 
+            // Update selection UI after resize/rotate/move operations
+            if ((dragState.current.mode === 'resizing' || dragState.current.mode === 'rotating' || dragState.current.mode === 'moving') && dragState.current.item) {
+                updateSelectionUI(dragState.current.item);
+                // Dispatch selection update event for properties panel
+                const item = dragState.current.item;
+                window.dispatchEvent(new CustomEvent('cad-selection-update', {
+                    detail: {
+                        width: item.bounds.width,
+                        height: item.bounds.height,
+                        rotation: item.rotation,
+                        content: item.className === 'PointText' ? (item as paper.PointText).content : ''
+                    }
+                }));
+            }
+
             // SAVE HISTORY if something happened
             if (dragState.current.mode !== 'none' || activePath.current) {
                 saveHistory();
             }
 
             dragState.current.mode = 'none';
+            dragState.current.item = null;
             activePath.current = null;
             dimensionText.current = null; // Clear ref but text item stays in project (via Group)
 

@@ -36,12 +36,7 @@ export default function SidebarRight() {
         text: ""
     });
 
-    const inputClass = clsx(
-        "border focus:border-accent-dark/50 rounded p-2 text-sm outline-none w-full transition-colors",
-        mode === 'dark'
-            ? "bg-white/5 border-transparent text-white"
-            : "bg-white border-gray-300 !text-black placeholder:text-gray-400"
-    );
+    const inputClass = "border rounded-md p-2 text-sm outline-none w-full transition-colors bg-background border-input focus:border-ring focus:ring-1 focus:ring-ring text-foreground placeholder:text-muted-foreground";
 
     // Listen for selection updates from Editor
     useEffect(() => {
@@ -73,33 +68,19 @@ export default function SidebarRight() {
     };
 
     return (
-        <aside className={cn(
-            "w-72 border-l flex flex-col h-full z-40",
-            mode === 'dark' 
-                ? "bg-[#0a0a0a] border-[#262626]" 
-                : "bg-[#f4f4f5] border-[#e5e5e5]"
-        )}>
+        <aside className="w-72 border-l flex flex-col h-full z-40 bg-card border-border">
             {/* Properties Inspector */}
-            <div className={cn(
-                "p-3 flex flex-col gap-3 border-b",
-                mode === 'dark' ? "border-[#262626]" : "border-[#e5e5e5]"
-            )}>
+            <div className="p-3 flex flex-col gap-3 border-b border-border">
                 <div className="flex items-center gap-2">
-                    <Settings2 size={18} className={mode === 'dark' ? "text-[#fbbf24]" : "text-[#fbbf24]"} />
-                    <h2 className={cn(
-                        "text-sm font-bold uppercase tracking-wider",
-                        mode === 'dark' ? "text-white" : "text-gray-900"
-                    )}>Properties</h2>
+                    <Settings2 size={18} className="text-primary" />
+                    <h2 className="text-sm font-semibold uppercase tracking-wider text-foreground">Properties</h2>
                 </div>
 
                 {selection.length > 0 ? (
                     <div className="flex flex-col gap-2.5">
                         <div className="grid grid-cols-2 gap-2">
                             <div className="flex flex-col gap-1.5">
-                                <label className={cn(
-                                    "text-[10px] uppercase font-bold",
-                                    mode === 'dark' ? "text-gray-400" : "text-gray-600"
-                                )}>Width (mm)</label>
+                                <label className="text-[10px] uppercase font-semibold text-muted-foreground">Width (px)</label>
                                 <input
                                     type="text"
                                     value={propValues.width}
@@ -108,10 +89,7 @@ export default function SidebarRight() {
                                 />
                             </div>
                             <div className="flex flex-col gap-1.5">
-                                <label className={cn(
-                                    "text-[10px] uppercase font-bold",
-                                    mode === 'dark' ? "text-gray-400" : "text-gray-600"
-                                )}>Height (mm)</label>
+                                <label className="text-[10px] uppercase font-semibold text-muted-foreground">Height (px)</label>
                                 <input
                                     type="text"
                                     value={propValues.height}
@@ -122,10 +100,7 @@ export default function SidebarRight() {
                         </div>
 
                         <div className="flex flex-col gap-1.5">
-                            <label className={cn(
-                                "text-[10px] uppercase font-bold",
-                                mode === 'dark' ? "text-gray-400" : "text-gray-600"
-                            )}>Rotation (°)</label>
+                            <label className="text-[10px] uppercase font-semibold text-muted-foreground">Rotation (°)</label>
                             <div className="relative">
                                 <input
                                     type="text"
@@ -138,10 +113,7 @@ export default function SidebarRight() {
                         </div>
 
                         <div className="flex flex-col gap-1.5">
-                            <label className={cn(
-                                "text-[10px] uppercase font-bold",
-                                mode === 'dark' ? "text-gray-400" : "text-gray-600"
-                            )}>Text Content</label>
+                            <label className="text-[10px] uppercase font-semibold text-muted-foreground">Text Content</label>
                             <input
                                 type="text"
                                 placeholder="Enter text..."
@@ -153,21 +125,13 @@ export default function SidebarRight() {
 
                         <button
                             onClick={() => handleAction('apply-props')}
-                            className={cn(
-                                "w-full py-2 text-sm font-bold rounded hover:shadow-lg transition-all",
-                                mode === 'dark' 
-                                    ? "bg-[#fbbf24] text-black hover:bg-[#f59e0b]" 
-                                    : "bg-[#fbbf24] text-black hover:bg-[#f59e0b]"
-                            )}
+                            className="w-full py-2 text-sm font-semibold rounded hover:shadow-md transition-all bg-primary text-primary-foreground hover:bg-primary/90"
                         >
                             Apply Changes
                         </button>
                     </div>
                 ) : (
-                    <div className={cn(
-                        "py-8 text-center text-xs italic opacity-70",
-                        mode === 'dark' ? "text-gray-300" : "text-gray-500"
-                    )}>
+                    <div className="py-8 text-center text-xs italic text-muted-foreground">
                         Select an object to inspect properties
                     </div>
                 )}
@@ -176,28 +140,22 @@ export default function SidebarRight() {
             {/* Global Actions */}
             <div className="p-3 flex flex-col gap-3">
                 <div className="flex items-center gap-2">
-                    <Hash size={18} className={mode === 'dark' ? "text-[#fbbf24]" : "text-[#fbbf24]"} />
-                    <h2 className={cn(
-                        "text-sm font-bold uppercase tracking-wider",
-                        mode === 'dark' ? "text-white" : "text-gray-900"
-                    )}>Global Settings</h2>
+                    <Hash size={18} className="text-primary" />
+                    <h2 className="text-sm font-semibold uppercase tracking-wider text-foreground">Global Settings</h2>
                 </div>
 
                 <div className="flex flex-col gap-3">
-                    <div className={cn(
-                        "flex items-center justify-between p-2 rounded-lg transition-colors cursor-pointer",
-                        mode === 'dark' ? "hover:bg-white/5" : "hover:bg-gray-100"
-                    )} onClick={() => setSmartSnapping(!smartSnapping)}>
+                    <div className="flex items-center justify-between p-2 rounded-lg transition-colors cursor-pointer hover:bg-accent" onClick={() => setSmartSnapping(!smartSnapping)}>
                         <div className="flex items-center gap-2">
-                            <Magnet size={16} className={smartSnapping ? (mode === 'dark' ? "text-[#fbbf24]" : "text-[#fbbf24]") : "text-gray-500"} />
-                            <span className={cn("text-sm font-medium", mode === 'dark' ? "text-gray-200" : "text-gray-700")}>Smart Snapping</span>
+                            <Magnet size={16} className={smartSnapping ? "text-primary" : "text-muted-foreground"} />
+                            <span className="text-sm font-medium text-foreground">Smart Snapping</span>
                         </div>
                         <div className={cn(
                             "w-8 h-4 rounded-full transition-colors relative",
-                            smartSnapping ? (mode === 'dark' ? "bg-[#fbbf24]" : "bg-[#fbbf24]") : "bg-gray-600"
+                            smartSnapping ? "bg-primary" : "bg-muted"
                         )}>
                             <div className={cn(
-                                "absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all",
+                                "absolute top-0.5 w-3 h-3 bg-background rounded-full transition-all shadow-sm",
                                 smartSnapping ? "left-4.5" : "left-0.5"
                             )} />
                         </div>
@@ -238,28 +196,18 @@ export default function SidebarRight() {
                     </div> */}
                 </div>
 
-                <div className={cn("h-px my-2", mode === 'dark' ? "bg-white/10" : "bg-gray-200")} />
+                <div className="h-px my-2 bg-border" />
 
                 <div className="grid grid-cols-2 gap-2">
                     <button
                         onClick={() => handleAction('rotate-90')}
-                        className={cn(
-                            "flex items-center justify-center gap-2 p-2 rounded text-xs font-bold transition-colors shadow-sm",
-                            mode === 'dark' 
-                                ? "bg-[#fbbf24] hover:bg-[#f59e0b] text-black" 
-                                : "bg-[#fbbf24] hover:bg-[#f59e0b] text-black"
-                        )}
+                        className="flex items-center justify-center gap-2 p-2 rounded text-xs font-semibold transition-colors shadow-sm bg-primary hover:bg-primary/90 text-primary-foreground"
                     >
                         <RotateCw size={14} /> Rotate 90
                     </button>
                     <button
                         onClick={() => handleAction('skew')}
-                        className={cn(
-                            "flex items-center justify-center gap-2 p-2 rounded text-xs font-bold transition-colors shadow-sm",
-                            mode === 'dark' 
-                                ? "bg-[#fbbf24] hover:bg-[#f59e0b] text-black" 
-                                : "bg-[#fbbf24] hover:bg-[#f59e0b] text-black"
-                        )}
+                        className="flex items-center justify-center gap-2 p-2 rounded text-xs font-semibold transition-colors shadow-sm bg-primary hover:bg-primary/90 text-primary-foreground"
                     >
                         <Maximize2 size={14} /> Perspective
                     </button>
@@ -267,7 +215,7 @@ export default function SidebarRight() {
 
                 <button
                     onClick={() => handleAction('purge')}
-                    className="w-full flex items-center justify-center gap-2 p-2 bg-red-500/10 text-red-500 hover:bg-red-500/20 rounded text-xs font-bold transition-all border border-red-500/20"
+                    className="w-full flex items-center justify-center gap-2 p-2 bg-destructive/10 text-destructive hover:bg-destructive/20 rounded text-xs font-semibold transition-all border border-destructive/20"
                 >
                     <Trash2 size={14} /> PURGE SELECTED
                 </button>

@@ -46,12 +46,10 @@ const ToolButton = ({
         className={cn(
             "p-2 rounded-lg transition-all duration-200 flex items-center justify-center gap-2",
             active
-                ? mode === 'dark' 
-                    ? "bg-[#fbbf24] text-black shadow-lg scale-105 font-bold"
-                    : "bg-[#fbbf24] text-black shadow-lg scale-105 font-bold"
+                ? "bg-primary text-primary-foreground shadow-md"
                 : mode === 'dark'
-                    ? "hover:bg-white/10 text-gray-300"
-                    : "hover:bg-gray-200 text-gray-700"
+                    ? "hover:bg-accent text-muted-foreground hover:text-foreground"
+                    : "hover:bg-accent text-muted-foreground hover:text-foreground"
         )}
     >
         <Icon size={20} />
@@ -95,27 +93,19 @@ export default function Header() {
 
     return (
         <header className={cn(
-            "h-16 border-b flex items-center justify-between px-6 z-50",
-            mode === 'dark' 
-                ? "bg-[#0a0a0a] border-[#262626]" 
-                : "bg-[#f4f4f5] border-[#e5e5e5]"
+            "h-16 border-b flex items-center justify-between px-6 z-50 bg-card",
+            "border-border"
         )}>
             <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                    <div className={cn(
-                        "w-8 h-8 rounded-lg flex items-center justify-center",
-                        mode === 'dark' ? "bg-[#fbbf24]" : "bg-[#fbbf24]"
-                    )}>
-                        <span className="text-black font-bold text-xl">U</span>
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-primary">
+                        <span className="text-primary-foreground font-bold text-xl">U</span>
                     </div>
-                    <h1 className={cn(
-                        "text-xl font-bold tracking-tight font-display",
-                        mode === 'dark' ? "text-white" : "text-[#09090b]"
-                    )}>
+                    <h1 className="text-xl font-bold tracking-tight font-display text-foreground">
                         UltraCAD
                     </h1>
                 </div>
-                <div className={cn("h-6 w-px mx-2", mode === 'dark' ? "bg-white/10" : "bg-gray-300")} />
+                <div className="h-6 w-px mx-2 bg-border" />
                 <nav className="flex items-center gap-1.5">
                     {tools.map((t) => (
                         <ToolButton
@@ -129,15 +119,12 @@ export default function Header() {
                         />
                     ))}
                 </nav>
-                <div className={cn("h-6 w-px mx-2", mode === 'dark' ? "bg-white/10" : "bg-gray-300")} />
+                <div className="h-6 w-px mx-2 bg-border" />
                 <div className="flex items-center gap-1.5">
                     <button
                         onClick={useCadStore.getState().undo}
                         disabled={useCadStore((s: any) => s.undoStack.length <= 1)}
-                        className={cn(
-                            "p-2 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed",
-                            mode === 'dark' ? "text-gray-400 hover:bg-white/10" : "text-gray-600 hover:bg-gray-100"
-                        )}
+                        className="p-2 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
                         title="Undo (Ctrl+Z)"
                     >
                         <Undo size={20} />
@@ -145,25 +132,19 @@ export default function Header() {
                     <button
                         onClick={useCadStore.getState().redo}
                         disabled={useCadStore((s: any) => s.redoStack.length === 0)}
-                        className={cn(
-                            "p-2 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed",
-                            mode === 'dark' ? "text-gray-400 hover:bg-white/10" : "text-gray-600 hover:bg-gray-100"
-                        )}
+                        className="p-2 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
                         title="Redo (Ctrl+Y)"
                     >
                         <Redo size={20} />
                     </button>
-                    <div className={cn("h-6 w-px mx-1", mode === 'dark' ? "bg-white/10" : "bg-gray-300")} />
+                    <div className="h-6 w-px mx-1 bg-border" />
                     <button
                         onClick={() => {
                             if (confirm('Clear entire canvas? This cannot be undone.')) {
                                 useCadStore.getState().resetCanvas();
                             }
                         }}
-                        className={cn(
-                            "p-2 rounded-lg transition-colors",
-                            mode === 'dark' ? "text-red-400 hover:bg-red-500/10" : "text-red-600 hover:bg-red-50"
-                        )}
+                        className="p-2 rounded-lg transition-colors text-destructive hover:bg-destructive/10"
                         title="Reset Canvas"
                     >
                         <RotateCcw size={20} />
@@ -174,24 +155,16 @@ export default function Header() {
             <div className="flex items-center gap-4">
                 <button
                     onClick={handleExport}
-                    className={cn(
-                        "flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-sm font-bold shadow-sm",
-                        mode === 'dark'
-                            ? "bg-[#fbbf24] hover:bg-[#f59e0b] text-black"
-                            : "bg-[#fbbf24] hover:bg-[#f59e0b] text-black"
-                    )}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-sm font-semibold shadow-sm bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
                     <Download size={18} />
                     Export PNG
                 </button>
                 <button
                     onClick={toggleMode}
-                    className={cn(
-                        "p-2 rounded-lg transition-colors",
-                        mode === 'dark' ? "bg-white/5 hover:bg-white/10" : "bg-gray-100 hover:bg-gray-200"
-                    )}
+                    className="p-2 rounded-lg transition-colors hover:bg-accent"
                 >
-                    {mode === 'dark' ? <Sun size={20} className="text-[#fbbf24]" /> : <Moon size={20} className="text-gray-600" />}
+                    {mode === 'dark' ? <Sun size={20} className="text-foreground" /> : <Moon size={20} className="text-foreground" />}
                 </button>
             </div>
         </header>
