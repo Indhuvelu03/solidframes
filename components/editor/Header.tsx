@@ -84,9 +84,25 @@ export default function Header() {
 
         const canvas = document.getElementById('cad-canvas') as HTMLCanvasElement;
         if (canvas) {
+            // Create a temporary canvas with white background
+            const tempCanvas = document.createElement('canvas');
+            const ctx = tempCanvas.getContext('2d');
+            
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            
+            // Fill with white background
+            if (ctx) {
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+                
+                // Draw the original canvas on top
+                ctx.drawImage(canvas, 0, 0);
+            }
+            
             const link = document.createElement('a');
             link.download = 'ultracad-export.png';
-            link.href = canvas.toDataURL();
+            link.href = tempCanvas.toDataURL();
             link.click();
         }
     };
