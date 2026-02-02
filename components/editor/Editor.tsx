@@ -109,10 +109,23 @@ export default function Editor() {
             if (text) content = text.content;
         }
 
+        // Calculate dimensions - if item is a group, use the path child bounds for accuracy
+        let itemForDimensions = item;
+        if (item.className === 'Group') {
+            const pathChild = item.children.find((c: any) => c.className === 'Path') as paper.Path;
+            if (pathChild) {
+                itemForDimensions = pathChild;
+            }
+        }
+        
+        // Calculate rounded dimensions for consistency with dimension text
+        let width = parseFloat((Math.abs(itemForDimensions.bounds.width / SCALE_MM_TO_PX)).toFixed(0));
+        let height = parseFloat((Math.abs(itemForDimensions.bounds.height / SCALE_MM_TO_PX)).toFixed(0));
+
         const event = new CustomEvent('cad-selection-update', {
             detail: {
-                width: item.bounds.width / SCALE_MM_TO_PX,
-                height: item.bounds.height / SCALE_MM_TO_PX,
+                width: width,
+                height: height,
                 rotation: item.rotation,
                 content: content
             }
@@ -586,6 +599,39 @@ export default function Editor() {
                 // Reposition to match the new bounds
                 item.position = item.position.add(newBounds.center.subtract(item.bounds.center));
 
+                // Update dimension text if item is a group with text
+                if (item.className === 'Group') {
+                    const pathChild = item.children.find((c: any) => c.className === 'Path') as paper.Path;
+                    const textChild = item.children.find((c: any) => c.className === 'PointText') as paper.PointText;
+                    
+                    if (pathChild && textChild) {
+                        const shapeType = pathChild.data?.type;
+                        
+                        if (shapeType === 'rect') {
+                            const w = Math.abs(pathChild.bounds.width / SCALE_MM_TO_PX).toFixed(0);
+                            const h = Math.abs(pathChild.bounds.height / SCALE_MM_TO_PX).toFixed(0);
+                            textChild.content = `W: ${w} H: ${h}`;
+                            // Position text above the rectangle
+                            textChild.point = pathChild.bounds.topCenter.subtract([0, 5]);
+                        } else if (shapeType === 'circle') {
+                            const radius = pathChild.bounds.width / 2;
+                            textChild.content = `R: ${(radius / SCALE_MM_TO_PX).toFixed(1)}mm`;
+                            // Position text above the circle
+                            textChild.point = pathChild.position.add([0, -radius - 20]);
+                        } else if (shapeType === 'poly') {
+                            const radius = pathChild.bounds.width / 2;
+                            textChild.content = `R: ${(radius / SCALE_MM_TO_PX).toFixed(1)}mm`;
+                            // Position text above the polygon
+                            textChild.point = pathChild.bounds.topCenter.subtract([0, 5]);
+                        } else if (shapeType === 'line') {
+                            const dist = (pathChild.length / SCALE_MM_TO_PX).toFixed(2);
+                            textChild.content = `${dist}mm`;
+                            // Position text above the line midpoint
+                            textChild.point = pathChild.getPointAt(pathChild.length / 2).add([0, -15]);
+                        }
+                    }
+                }
+
                 updateSelectionUI(item);
             }
             else if (dragState.current.mode === 'drawing' && activePath.current) {
@@ -688,10 +734,23 @@ export default function Editor() {
                     const text = item.children.find((c: any) => c.className === 'PointText') as paper.PointText;
                     if (text) content = text.content;
                 }
+                // Calculate dimensions - if item is a group, use the path child bounds for accuracy
+                let itemForDimensions = item;
+                if (item.className === 'Group') {
+                    const pathChild = item.children.find((c: any) => c.className === 'Path') as paper.Path;
+                    if (pathChild) {
+                        itemForDimensions = pathChild;
+                    }
+                }
+                
+                // Calculate rounded dimensions for consistency with dimension text
+                let width = parseFloat((Math.abs(itemForDimensions.bounds.width / SCALE_MM_TO_PX)).toFixed(0));
+                let height = parseFloat((Math.abs(itemForDimensions.bounds.height / SCALE_MM_TO_PX)).toFixed(0));
+
                 window.dispatchEvent(new CustomEvent('cad-selection-update', {
                     detail: {
-                        width: item.bounds.width / SCALE_MM_TO_PX,
-                        height: item.bounds.height / SCALE_MM_TO_PX,
+                        width: width,
+                        height: height,
                         rotation: item.rotation,
                         content: content
                     }
